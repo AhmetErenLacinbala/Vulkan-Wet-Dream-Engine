@@ -3,14 +3,26 @@ project(VulkanTest)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(SOURCES 
+    main.cpp
+    lve_window.cpp
+    first_app.cpp
+    )
+
+set(HEADERS
+    lve_window.hpp
+    first_app.hpp
+
+)
+
+
 # Look for Vulkan
 find_package(Vulkan REQUIRED)
 
 # Look for GLFW
 find_package(glfw3 REQUIRED)
 
-# Add executable
-add_executable(VulkanTest main.cpp)
+add_executable(VulkanTest ${SOURCES} ${HEADERS})
 
 # Link against Vulkan and GLFW
 target_link_libraries(VulkanTest Vulkan::Vulkan glfw)
