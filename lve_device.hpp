@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lve_window.hpp"
-#include "lve_device.hpp"
 
 // std lib headers
 #include <string>
@@ -74,6 +73,7 @@ class LveDevice {
   VkPhysicalDeviceProperties properties;
 
  private:
+  void checkExtention();
   void createInstance();
   void setupDebugMessenger();
   void createSurface();
@@ -103,7 +103,7 @@ class LveDevice {
   VkQueue presentQueue_;
 
   const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-  const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+  const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"};
 };
 
 }  // namespace lve

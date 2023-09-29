@@ -21,7 +21,7 @@ namespace lve
             LvePipeline(const LvePipeline&) = delete; // not copyable
             void operator=(const LvePipeline&) = delete; // not copyable
 
-            static PipelineConfigInfo LvePipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height);
+            static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
             
         private:
         static std::vector<char> readFile(const std::string& filepath);
