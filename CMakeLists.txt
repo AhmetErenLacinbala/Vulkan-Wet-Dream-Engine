@@ -9,6 +9,7 @@ set(SOURCES
     first_app.cpp
     lve_pipeline.cpp
     lve_device.cpp
+    lve_swap_chain.cpp
     )
 
 set(HEADERS
@@ -16,6 +17,7 @@ set(HEADERS
     first_app.hpp
     lve_pipeline.hpp
     lve_device.hpp
+    lve_swap_chain.hpp
 )
 
 
