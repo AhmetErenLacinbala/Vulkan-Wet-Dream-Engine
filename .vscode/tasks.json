@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake",
+            "type": "shell",
+            "command": "cmake",
+            "options": {
+                "cwd": "${workspaceFolder}/build",
+            },
+            "args": ["-DCMAKE_BUILD_TYPE=Debug", "${workspaceFolder}"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": ["makedir"]
+        },
+        {
+            "label": "makedir",
+            "type": "shell",
+            "command": "mkdir",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "args": ["-p", "opengl-terrian-build"],
+        },
+        {
+            "label": "Make",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/build",
+            },
+            "args": ["-l"],
+        }
+    ]
+}
+
+  

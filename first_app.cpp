@@ -46,7 +46,6 @@ namespace lve {
                 "shaders/simple_shader.frag.spv",
                 pipelineConfig
             );
-
         }
 
 
