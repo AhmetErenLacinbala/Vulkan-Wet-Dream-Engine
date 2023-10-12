@@ -136,6 +136,11 @@ namespace lve
             throw std::runtime_error("failed to create shader module!");
         }
     }
+
+    void LvePipeline::bind(VkCommandBuffer commandBuffer){
+        //other pipelines are point_computer and point_ray_tracing_khr
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
     PipelineConfigInfo LvePipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
     {
         PipelineConfigInfo configInfo{};

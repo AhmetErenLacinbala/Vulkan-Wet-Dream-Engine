@@ -22,7 +22,7 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "args": ["-p", "opengl-terrian-build"],
+            "args": ["-p", "build"],
         },
         {
             "label": "Make",
@@ -33,6 +33,7 @@
             },
             "args": ["-l"],
         }
+        
     ]
 }
 

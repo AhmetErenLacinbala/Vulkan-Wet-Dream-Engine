@@ -42,3 +42,11 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}/shaders
         $<TARGET_FILE_DIR:VulkanTest>/shaders
 )
+
+# Run compile.sh script
+add_custom_command(
+    TARGET VulkanTest POST_BUILD
+    COMMAND chmod +x ${CMAKE_SOURCE_DIR}/compile.sh  # Make the script executable
+    COMMAND ${CMAKE_SOURCE_DIR}/compile.sh
+)
+
