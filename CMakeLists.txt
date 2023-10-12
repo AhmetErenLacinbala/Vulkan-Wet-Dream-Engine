@@ -32,8 +32,8 @@ add_executable(VulkanTest ${SOURCES} ${HEADERS})
 # Link against Vulkan and GLFW
 target_link_libraries(VulkanTest Vulkan::Vulkan glfw)
 
-# Include GLM
-target_include_directories(VulkanTest PRIVATE $ENV{CMAKE_INCLUDE_PATH})
+
+target_include_directories(VulkanTest PRIVATE $ENV{CMAKE_INCLUDE_PATH} glm)
 
 # Copy shader files to build directory
 add_custom_command(
