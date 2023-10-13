@@ -5,6 +5,7 @@
 namespace lve {
 
     FirstApp::FirstApp(){
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -23,6 +24,17 @@ namespace lve {
 
             vkDeviceWaitIdle(lveDevice.device());
         }
+    }
+
+    void FirstApp::loadModels(){
+        std::vector<LveModel::Vertex> vertices{
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+
+        };
+
+        lveModel = std::make_unique<LveModel>(lveDevice, vertices);
     }
     void FirstApp::createPipelineLayout(){
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -129,7 +141,10 @@ namespace lve {
                 //instance can be used when you want to draw multiple copies of the same object.
                 //this is very handy when working with particals.
                 //0, 0 because we don't use any offest currently.
-                vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+                //vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+
+                lveModel->bind(commandBuffers[i]);
+                lveModel->draw(commandBuffers[i]);
 
                 vkCmdEndRenderPass(commandBuffers[i]);
                 if(vkEndCommandBuffer(commandBuffers[i]) !=VK_SUCCESS){
