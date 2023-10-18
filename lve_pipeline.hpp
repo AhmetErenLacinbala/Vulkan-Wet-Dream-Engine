@@ -29,7 +29,7 @@ namespace lve
 
         ~LvePipeline();
         LvePipeline(const LvePipeline &) = delete;    // not copyable
-        void operator=(const LvePipeline &) = delete; // not copyable
+        LvePipeline& operator=(const LvePipeline &) = delete; // not copyable
 
 
         void bind(VkCommandBuffer commandBuffer);

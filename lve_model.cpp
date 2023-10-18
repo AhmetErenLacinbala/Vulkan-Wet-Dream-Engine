@@ -49,11 +49,23 @@ namespace lve{
             return bindingDescription;
         }
         std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDescription(){
-            std::vector<VkVertexInputAttributeDescription> attributeDescription(1);
+            //parameter is about how many attributes we will pass
+            //for example 1 is only for position information,
+            //but when we use we can pass location and color of the vertices
+            std::vector<VkVertexInputAttributeDescription> attributeDescription(2);
+
+            //position
             attributeDescription[0].binding = 0;
             attributeDescription[0].location = 0;
             attributeDescription[0].format = VK_FORMAT_R32G32_SFLOAT;
-            attributeDescription[0].offset = 0;
+            attributeDescription[0].offset = offsetof(Vertex, position);
+            
+            //color
+            attributeDescription[1].binding = 0;
+            attributeDescription[1].location = 1;
+            attributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescription[1].offset = offsetof(Vertex, color);
+
             return attributeDescription;
         }
 }
