@@ -20,6 +20,7 @@ set(HEADERS
     lve_device.hpp
     lve_swap_chain.hpp
     lve_model.hpp
+    lve_game_object.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
