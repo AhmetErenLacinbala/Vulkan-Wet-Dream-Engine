@@ -11,6 +11,8 @@ set(SOURCES
     lve_device.cpp
     lve_swap_chain.cpp
     lve_model.cpp
+    lve_renderer.cpp
+    simple_render_system.cpp
 )
 
 set(HEADERS
@@ -21,6 +23,8 @@ set(HEADERS
     lve_swap_chain.hpp
     lve_model.hpp
     lve_game_object.hpp
+    lve_renderer.hpp
+    simple_render_system.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
