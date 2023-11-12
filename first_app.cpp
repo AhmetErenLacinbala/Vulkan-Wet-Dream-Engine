@@ -1,4 +1,5 @@
 #include "first_app.hpp"
+#include "lve_camera.hpp"
 #include "simple_render_system.hpp"
 
 
@@ -24,15 +25,19 @@ FirstApp::~FirstApp() {
 
 void FirstApp::run() {
     SimpleRenderSystem simpleRendereSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+    LveCamera camera {};
 
     std::cout << "max push conts size = " << lveDevice.properties.limits.maxPushConstantsSize << "\n";
     while (!lveWindow.shouldClose()) {
         // poll events checks if any events are triggered (like keyboard or mouse input)
         // or dismissed the window etc.
         glfwPollEvents();
+        float aspect = lveRenderer.getAspectRatio();
+        //camera.setOrthographicProjection(-aspect,aspect,-1,1,-1,1);
+        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
         if (auto commandBuffer = lveRenderer.beginFrame()){
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
-            simpleRendereSystem.renderGameObjects(commandBuffer, gameObjects);
+            simpleRendereSystem.renderGameObjects(commandBuffer, gameObjects, camera);
             lveRenderer.endSwapChainRenderPass(commandBuffer);
             lveRenderer.endFrame();
         }
@@ -103,7 +108,7 @@ void FirstApp::loadGameObjects() {
     std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {0.f, 0.f, 0.f});
     auto cube = LveGameObject::createGameObject();
     cube.model = lveModel;
-    cube.transform.translation = {0.f, 0.f, 0.5f};
+    cube.transform.translation = {0.f, 0.f, 2.5f};
     cube.transform.scale = {.5f, .5f, .5f};
     //reason of this tranform:
     //x from [-1, 1], y from [-1, 1] but z from [0, 1]
