@@ -19,6 +19,9 @@ namespace lve {
                 static_cast<uint32_t>(height)
             };
         }
+
+        GLFWwindow* getGLFWwindow() const {return window;}
+
         void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         private:
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height);

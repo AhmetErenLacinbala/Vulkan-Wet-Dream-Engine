@@ -14,6 +14,7 @@ set(SOURCES
     lve_renderer.cpp
     simple_render_system.cpp
     lve_camera.cpp
+    keyboard_movement_controller.cpp
 )
 
 set(HEADERS
@@ -27,6 +28,7 @@ set(HEADERS
     lve_renderer.hpp
     simple_render_system.hpp
     lve_camera.hpp
+    keyboard_movement_controller.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
