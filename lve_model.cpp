@@ -1,7 +1,6 @@
 #include "lve_model.hpp"
 #include "lve_utils.hpp"
 
-
 // libs
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -13,18 +12,17 @@
 #include <iostream>
 #include <unordered_map>
 
+namespace std {
+template <>
+struct hash<lve::LveModel::Vertex> {
+    size_t operator()(lve::LveModel::Vertex const &vertex) const {
+        size_t seed = 0;
+        lve::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        return seed;
+    }
+};
 
-namespace std{
-    template<>
-    struct hash<lve::LveModel::Vertex>{
-        size_t operator()(lve::LveModel::Vertex const &vertex) const {
-            size_t seed = 0;
-            lve::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-            return seed;
-        }
-    };
-
-}
+} // namespace std
 
 namespace lve {
 
@@ -122,20 +120,12 @@ std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDes
     // parameter is about how many attributes we will pass
     // for example 1 is only for position information,
     // but when we use we can pass location and color of the vertices
-    std::vector<VkVertexInputAttributeDescription> attributeDescription(2);
+    std::vector<VkVertexInputAttributeDescription> attributeDescription{};
 
-    // position
-    attributeDescription[0].binding = 0;
-    attributeDescription[0].location = 0;
-    attributeDescription[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescription[0].offset = offsetof(Vertex, position);
-
-    // color
-    attributeDescription[1].binding = 0;
-    attributeDescription[1].location = 1;
-    attributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescription[1].offset = offsetof(Vertex, color);
-
+    attributeDescription.push_back({0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
+    attributeDescription.push_back({0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
+    attributeDescription.push_back({0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
+    attributeDescription.push_back({0, 3, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)});
     return attributeDescription;
 }
 void LveModel::Builder::loadModel(const std::string &filepath) {
@@ -151,7 +141,7 @@ void LveModel::Builder::loadModel(const std::string &filepath) {
     vertices.clear();
     indices.clear();
 
-    std::unordered_map<Vertex, uint32_t>uniqueVertices{};
+    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
     for (const auto &shape : shapes) {
         for (const auto &index : shape.mesh.indices) {
@@ -162,17 +152,12 @@ void LveModel::Builder::loadModel(const std::string &filepath) {
                     attrib.vertices[3 * index.vertex_index + 1],
                     attrib.vertices[3 * index.vertex_index + 2],
                 };
-                auto colorIndex = 3 * index.vertex_index + 2;
-                if(colorIndex < attrib.colors.size()){
-                    vertex.color = {
-                        attrib.colors[colorIndex - 2],
-                        attrib.colors[colorIndex - 1],
-                        attrib.colors[colorIndex - 0],
-                    };
-                }
-                else {
-                    vertex.color = {1.f, 1.f, 1.f}; //set default color value if no color data provided in obj file
-                }
+
+                vertex.color = {
+                    attrib.colors[3 * index.vertex_index - 2],
+                    attrib.colors[3 * index.vertex_index - 1],
+                    attrib.colors[3 * index.vertex_index - 0],
+                };
             }
             if (index.normal_index >= 0) {
                 vertex.normal = {
@@ -187,7 +172,7 @@ void LveModel::Builder::loadModel(const std::string &filepath) {
                     attrib.texcoords[2 * index.vertex_index + 1],
                 };
             }
-            if(uniqueVertices.count(vertex) == 0){
+            if (uniqueVertices.count(vertex) == 0) {
                 uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
                 vertices.push_back(vertex);
             }

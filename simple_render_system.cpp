@@ -10,7 +10,7 @@
 
 struct SimplePushConstantData{
     glm::mat4 transform{1.f};
-    alignas(16) glm::vec3 color;
+    glm::mat4 modelMatrix{1.f};
 };
 
 
@@ -71,10 +71,11 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
 
     for(auto &obj: gameObjects){
         SimplePushConstantData push{};
-        push.color = obj.color;
         // most of the game engines don't handle the projection on cpu
         // they handle it on gpu through shaders instead
-        push.transform = projectionView * obj.transform.mat4();
+        auto modelMatrix = obj.transform.mat4();
+        push.transform = projectionView * modelMatrix;
+        push.modelMatrix = modelMatrix;
 
         vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
         obj.model->bind(commandBuffer);
