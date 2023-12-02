@@ -5,7 +5,8 @@
 #include <iostream>
 #include <cstdlib>
 
-int main(){
+int main(int argc, char * argv[]){
+    std::cout <<"Current file path: "<< argv[0]<<"\n";
     lve::FirstApp app{};
     try {
         app.run();

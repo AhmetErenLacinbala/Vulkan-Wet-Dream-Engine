@@ -69,6 +69,8 @@
         "compare": "cpp",
         "concepts": "cpp",
         "algorithm": "cpp",
-        "cassert": "cpp"
-    }
+        "cassert": "cpp",
+        "map": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${CMAKE_INCLUDE_PATH}/**"
+                "${CMAKE_INCLUDE_PATH}/**",
+                "${workspaceFolder}/libs"
             ],
             "defines": [],
             "macFrameworkPath": [

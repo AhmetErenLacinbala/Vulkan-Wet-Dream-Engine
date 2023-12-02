@@ -6,7 +6,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-
+#include <memory>
 #include <vector>
 
 namespace lve
@@ -21,17 +21,24 @@ namespace lve
         glm::vec3 color;
         static std::vector<VkVertexInputBindingDescription> getBindingDescription();
         static std::vector<VkVertexInputAttributeDescription> getAttributeDescription();
+        glm::vec3 normal{};
+        glm::vec2 uv{};
     };
 
     struct Builder {
         std::vector<Vertex> vertices {};
         std::vector<uint32_t> indices {};
+
+        void loadModel(const std::string &filepath);
+
     };
 
         LveModel(LveDevice &device, const LveModel::Builder& builder);
         ~LveModel();
         LveModel(const LveModel &) = delete;
         LveModel &operator=(const LveModel &) = delete;
+
+        static std::unique_ptr<LveModel> createModelFromFile(LveDevice &device, const std::string &filepath);
 
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);

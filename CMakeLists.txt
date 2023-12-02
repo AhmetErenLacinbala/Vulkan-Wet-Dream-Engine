@@ -29,6 +29,7 @@ set(HEADERS
     simple_render_system.hpp
     lve_camera.hpp
     keyboard_movement_controller.hpp
+    tiny_obj_loader.h
 )
 
 # Find Vulkan, GLFW, and GLM
@@ -52,6 +53,14 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/shaders
         $<TARGET_FILE_DIR:VulkanTest>/shaders
+)
+
+# Copy model files to build directory
+add_custom_command(
+    TARGET VulkanTest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/models
+        $<TARGET_FILE_DIR:VulkanTest>/models
 )
 
 # Run compile.sh script
