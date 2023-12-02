@@ -30,6 +30,7 @@ set(HEADERS
     lve_camera.hpp
     keyboard_movement_controller.hpp
     tiny_obj_loader.h
+    lve_utils.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
