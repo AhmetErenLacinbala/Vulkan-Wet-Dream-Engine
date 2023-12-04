@@ -123,9 +123,9 @@ std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDes
     std::vector<VkVertexInputAttributeDescription> attributeDescription{};
 
     attributeDescription.push_back({0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
-    attributeDescription.push_back({0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
-    attributeDescription.push_back({0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
-    attributeDescription.push_back({0, 3, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)});
+    attributeDescription.push_back({1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
+    attributeDescription.push_back({2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
+    attributeDescription.push_back({3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)});
     return attributeDescription;
 }
 void LveModel::Builder::loadModel(const std::string &filepath) {
@@ -154,9 +154,9 @@ void LveModel::Builder::loadModel(const std::string &filepath) {
                 };
 
                 vertex.color = {
-                    attrib.colors[3 * index.vertex_index - 2],
-                    attrib.colors[3 * index.vertex_index - 1],
-                    attrib.colors[3 * index.vertex_index - 0],
+                    attrib.colors[3 * index.vertex_index + 0],
+                    attrib.colors[3 * index.vertex_index + 1],
+                    attrib.colors[3 * index.vertex_index + 2],
                 };
             }
             if (index.normal_index >= 0) {
