@@ -15,6 +15,7 @@ set(SOURCES
     simple_render_system.cpp
     lve_camera.cpp
     keyboard_movement_controller.cpp
+    lve_game_object.cpp
 )
 
 set(HEADERS
