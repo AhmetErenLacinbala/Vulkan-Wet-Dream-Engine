@@ -68,8 +68,8 @@ void FirstApp::loadGameObjects() {
     std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(lveDevice, "./models/smooth_vase.obj");
     auto gameObject = LveGameObject::createGameObject();
     gameObject.model = lveModel;
-    gameObject.transform.translation = {0.f, 0.f, 2.5f};
-    gameObject.transform.scale = {1.f, 1.f, 1.f};
+    gameObject.transform.translation = {0.f, .5f, 2.5f};
+    gameObject.transform.scale = {2.f, 2.f, 2.f};
     //reason of this tranform:
     //x from [-1, 1], y from [-1, 1] but z from [0, 1]
     //because the z value is form 0 to 1 front half to he object will be cliped since it is bigger than viewing volume
