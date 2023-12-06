@@ -31,15 +31,17 @@ FirstApp::~FirstApp() {
 
 void FirstApp::run() {
 
-    LveBuffer globalUboBuffer{
-        lveDevice,
-        sizeof(GlobalUbo),
-        LveSwapChain::MAX_FRAMES_IN_FLIGHT,
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-        lveDevice.properties.limits.minUniformBufferOffsetAlignment
-    };
-    globalUboBuffer.map();
+    std::vector<std::unique_ptr<LveBuffer>> uboBuffers(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+    for(auto &uboBuffer:uboBuffers ){
+        uboBuffer = std::make_unique<LveBuffer>(
+            lveDevice,
+            sizeof(GlobalUbo),
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+        );
+        uboBuffer->map();
+    }
 
     SimpleRenderSystem simpleRendereSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
     LveCamera camera {};
@@ -81,8 +83,8 @@ void FirstApp::run() {
             //update
             GlobalUbo ubo{};
             ubo.projectionView = camera.getProjection() * camera.getView();
-            globalUboBuffer.writeToBuffer(&ubo, frameIndex);
-            globalUboBuffer.flushIndex(frameIndex);
+            uboBuffers[frameIndex]->writeToBuffer(&ubo);
+            uboBuffers[frameIndex]->flush();
 
             //render
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
