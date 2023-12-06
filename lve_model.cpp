@@ -31,13 +31,6 @@ LveModel::LveModel(LveDevice &device, const LveModel::Builder &builder) : lveDev
     createIndexBuffers(builder.indices);
 }
 LveModel::~LveModel() {
-    vkDestroyBuffer(lveDevice.device(), vertexBuffer, nullptr);
-    vkFreeMemory(lveDevice.device(), vertexBufferMemory, nullptr);
-
-    if (hasIndexBuffer) {
-        vkDestroyBuffer(lveDevice.device(), indexBuffer, nullptr);
-        vkFreeMemory(lveDevice.device(), indexBufferMemory, nullptr);
-    }
 }
 
 std::unique_ptr<LveModel> LveModel::createModelFromFile(LveDevice &device, const std::string &filepath) {
@@ -50,20 +43,26 @@ void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
     vertexCount = static_cast<uint32_t>(vertices.size());
     assert(vertexCount >= 3 && "Vertex count must be at least 3");
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-    lveDevice.createBuffer(
-        bufferSize,
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        // host is cpu, device is gpu
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        vertexBuffer,
-        vertexBufferMemory);
+    uint32_t vertexSize = sizeof(vertices[0]);
 
-    void *data;
-    // first 0 is offset,
-    // second 0 is for not providing map flag(?)
-    vkMapMemory(lveDevice.device(), vertexBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-    vkUnmapMemory(lveDevice.device(), vertexBufferMemory);
+    LveBuffer stagingBuffer{
+        lveDevice,
+        vertexSize,
+        vertexCount,
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+    };
+    stagingBuffer.map();
+    stagingBuffer.writeToBuffer((void*)vertices.data());
+
+    vertexBuffer = std::make_unique<LveBuffer>(
+        lveDevice,
+        vertexSize,
+        vertexCount,
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+    );
+    lveDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 }
 
 void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
@@ -76,20 +75,30 @@ void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
 
     assert(vertexCount >= 3 && "Vertex count must be at least 3");
     VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
-    lveDevice.createBuffer(
-        bufferSize,
+    uint32_t indexSize = sizeof(indices[0]);
+
+    LveBuffer stagingBuffer = {
+        lveDevice,
+        indexSize,
+        indexCount,
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
         // host is cpu, device is gpu
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        indexBuffer,
-        indexBufferMemory);
 
-    void *data;
-    // first 0 is offset,
-    // second 0 is for not providing map flag(?)
-    vkMapMemory(lveDevice.device(), indexBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-    vkUnmapMemory(lveDevice.device(), indexBufferMemory);
+    };
+
+    stagingBuffer.map();
+    stagingBuffer.writeToBuffer((void*)indices.data());
+    
+    indexBuffer = std::make_unique<LveBuffer> (
+        lveDevice,
+        indexSize,
+        indexCount,
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+    );
+
+    lveDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 }
 
 void LveModel::draw(VkCommandBuffer commandBuffer) {
@@ -100,12 +109,12 @@ void LveModel::draw(VkCommandBuffer commandBuffer) {
     }
 }
 void LveModel::bind(VkCommandBuffer commandBuffer) {
-    VkBuffer buffers[] = {vertexBuffer};
+    VkBuffer buffers[] = {vertexBuffer->getBuffer()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
     if (hasIndexBuffer) {
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
 }
 
