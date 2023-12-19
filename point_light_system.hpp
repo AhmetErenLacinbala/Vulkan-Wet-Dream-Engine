@@ -6,24 +6,19 @@
 #include "lve_game_object.hpp"
 #include "lve_frame_info.hpp"
 
-
-
 #include <memory>
 #include <vector>
 
 
-
-
-
 namespace lve {
 
-    class SimpleRenderSystem {
+    class PointLightSytem {
         public:
-        SimpleRenderSystem(LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
-        ~SimpleRenderSystem();
-        SimpleRenderSystem(const SimpleRenderSystem&) = delete;
-        SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
-        void renderGameObjects(FrameInfo& frameInfo);
+        PointLightSytem(LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+        ~PointLightSytem();
+        PointLightSytem(const PointLightSytem&) = delete;
+        PointLightSytem& operator=(const PointLightSytem&) = delete;
+        void render(FrameInfo& frameInfo);
     
     private:
 

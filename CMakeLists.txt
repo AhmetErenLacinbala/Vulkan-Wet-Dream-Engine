@@ -18,6 +18,7 @@ set(SOURCES
     lve_game_object.cpp
     lve_buffer.cpp
     lve_descriptors.cpp
+    point_light_system.cpp
 )
 
 set(HEADERS
@@ -37,6 +38,7 @@ set(HEADERS
     lve_buffer.hpp
     lve_frame_info.hpp
     lve_descriptors.hpp
+    point_light_system.hpp
 )
 
 # Find Vulkan, GLFW, and GLM

@@ -2,6 +2,7 @@
 #include "keyboard_movement_controller.hpp"
 #include "lve_camera.hpp"
 #include "simple_render_system.hpp"
+#include "point_light_system.hpp"
 #include "lve_buffer.hpp"
 
 #define GLM_FORCE_RADIANS
@@ -17,7 +18,8 @@
 namespace lve {
 
     struct GlobalUbo{
-        glm::mat4 projectionView{1.f};
+        glm::mat4 projection{1.f};
+        glm::mat4 view{1.f};
         glm::vec4 ambientLightColor{1.f,1.f,1.f,0.02f}; //w is intensity
         glm::vec3 lightPosition{-1.f};
         alignas(32)glm::vec4 lightColor{1.f}; //w is light intensity
@@ -66,6 +68,7 @@ void FirstApp::run() {
     }
     
     SimpleRenderSystem simpleRendereSystem{lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+    PointLightSytem pointLightSystem{lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
     LveCamera camera {};
 
 
@@ -101,18 +104,21 @@ void FirstApp::run() {
                 frameTime,
                 commandBuffer,
                 camera,
-                globalDescriptorSets[frameIndex]
+                globalDescriptorSets[frameIndex],
+                gameObjects
             };
 
             //update
             GlobalUbo ubo{};
-            ubo.projectionView = camera.getProjection() * camera.getView();
+            ubo.projection = camera.getProjection();
+            ubo.view = camera.getView();
             uboBuffers[frameIndex]->writeToBuffer(&ubo);
             uboBuffers[frameIndex]->flush();
 
             //render
             lveRenderer.beginSwapChainRenderPass(commandBuffer);
-            simpleRendereSystem.renderGameObjects(frameInfo, gameObjects);
+            simpleRendereSystem.renderGameObjects(frameInfo);
+            pointLightSystem.render(frameInfo);
             lveRenderer.endSwapChainRenderPass(commandBuffer);
             lveRenderer.endFrame();
         }
@@ -127,13 +133,13 @@ void FirstApp::loadGameObjects() {
     gameObject1.model = lveModel;
     gameObject1.transform.translation = {0.f, .5f, 1.f};
     gameObject1.transform.scale = {2.f, 2.f, 2.f};
-    gameObjects.push_back(std::move(gameObject1));
+    gameObjects.emplace(gameObject1.getId(), std::move(gameObject1));
 
     auto gameObject2 = LveGameObject::createGameObject();
     gameObject2.model = lveModel;
     gameObject2.transform.translation = {0.f, .5f, 0.f};
     gameObject2.transform.scale = {2.f, 2.f, 2.f};
-    gameObjects.push_back(std::move(gameObject2));
+    gameObjects.emplace(gameObject2.getId(), std::move(gameObject2));
     //reason of this tranform:
     //x from [-1, 1], y from [-1, 1] but z from [0, 1]
     //because the z value is form 0 to 1 front half to he object will be cliped since it is bigger than viewing volume
@@ -144,7 +150,7 @@ void FirstApp::loadGameObjects() {
     quad_floor.model = quadModel;
     quad_floor.transform.translation = {0.f, .5f, 0.f};
     quad_floor.transform.scale = {3.f, 1.f, 3.f};
-    gameObjects.push_back(std::move(quad_floor));
+    gameObjects.emplace(quad_floor.getId(), std::move(quad_floor));
 
 }
 
