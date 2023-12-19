@@ -17,9 +17,12 @@
 namespace lve {
 
     struct GlobalUbo{
-        alignas(16) glm::mat4 projectionView{1.f};
-        alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
-    };
+        glm::mat4 projectionView{1.f};
+        glm::vec4 ambientLightColor{1.f,1.f,1.f,0.02f}; //w is intensity
+        glm::vec3 lightPosition{-1.f};
+        alignas(32)glm::vec4 lightColor{1.f}; //w is light intensity
+        //vec4 lightColor -> (r,g,b,intensity) -> (rxi, gxi, bxi)
+        };
 
 FirstApp::FirstApp() {
     globalPool = LveDescriptorPool::Builder(lveDevice)
@@ -67,6 +70,7 @@ void FirstApp::run() {
 
 
     auto viewerObject = LveGameObject::createGameObject();
+    viewerObject.transform.translation.z = -2.5f;
     KeyboardMovementController cameraController{};
 
     std::cout << "max push conts size = " << lveDevice.properties.limits.maxPushConstantsSize << "\n";
@@ -89,7 +93,7 @@ void FirstApp::run() {
 
         float aspect = lveRenderer.getAspectRatio();
         //camera.setOrthographicProjection(-aspect,aspect,-1,1,-1,1);
-        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
+        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
         if (auto commandBuffer = lveRenderer.beginFrame()){
             int frameIndex = lveRenderer.getFrameIndex();
             FrameInfo frameInfo{
@@ -119,16 +123,29 @@ void FirstApp::run() {
 
 void FirstApp::loadGameObjects() {
     std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(lveDevice, "./models/smooth_vase.obj");
-    auto gameObject = LveGameObject::createGameObject();
-    gameObject.model = lveModel;
-    gameObject.transform.translation = {0.f, .5f, 2.5f};
-    gameObject.transform.scale = {2.f, 2.f, 2.f};
+    auto gameObject1 = LveGameObject::createGameObject();
+    gameObject1.model = lveModel;
+    gameObject1.transform.translation = {0.f, .5f, 1.f};
+    gameObject1.transform.scale = {2.f, 2.f, 2.f};
+    gameObjects.push_back(std::move(gameObject1));
+
+    auto gameObject2 = LveGameObject::createGameObject();
+    gameObject2.model = lveModel;
+    gameObject2.transform.translation = {0.f, .5f, 0.f};
+    gameObject2.transform.scale = {2.f, 2.f, 2.f};
+    gameObjects.push_back(std::move(gameObject2));
     //reason of this tranform:
     //x from [-1, 1], y from [-1, 1] but z from [0, 1]
     //because the z value is form 0 to 1 front half to he object will be cliped since it is bigger than viewing volume
     //so we move it on z axis then scale it by half
 
-    gameObjects.push_back(std::move(gameObject));
+    std::shared_ptr<LveModel> quadModel = LveModel::createModelFromFile(lveDevice, "./models/quad.obj");
+    auto quad_floor = LveGameObject::createGameObject();
+    quad_floor.model = quadModel;
+    quad_floor.transform.translation = {0.f, .5f, 0.f};
+    quad_floor.transform.scale = {3.f, 1.f, 3.f};
+    gameObjects.push_back(std::move(quad_floor));
+
 }
 
 } // namespace lve
