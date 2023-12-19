@@ -17,6 +17,7 @@ set(SOURCES
     keyboard_movement_controller.cpp
     lve_game_object.cpp
     lve_buffer.cpp
+    lve_descriptors.cpp
 )
 
 set(HEADERS
@@ -35,6 +36,7 @@ set(HEADERS
     lve_utils.hpp
     lve_buffer.hpp
     lve_frame_info.hpp
+    lve_descriptors.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
