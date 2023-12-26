@@ -17,6 +17,9 @@ namespace lve
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+        //glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
         
@@ -34,4 +37,5 @@ namespace lve
         lveWindow->width=width;
         lveWindow->height=height;
     }
+    
 }

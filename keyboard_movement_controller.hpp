@@ -26,5 +26,13 @@ class KeyboardMovementController {
     KeyMappings keys{};
     float moveSpeed {3.f};
     float lookSpeed {1.5f};
+    private:
+        bool firstMouseMove = true;
+        double currentX;
+        double currentY;
+        double lastX;
+        double lastY;
+        double dX;
+        double dY;
 };
 } // namespace lve

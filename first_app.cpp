@@ -35,6 +35,7 @@ FirstApp::FirstApp() {
     //you can store different kinds of type but not the same type. You can set 2 uniform buffer descriptors together
 
     loadGameObjects();
+    std::cout<<"total game object size: "<< sizeof(gameObjects) << std::endl;
 }
 
 FirstApp::~FirstApp() {
@@ -44,6 +45,7 @@ FirstApp::~FirstApp() {
 void FirstApp::run() {
 
     std::vector<std::unique_ptr<LveBuffer>> uboBuffers(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+    
     for(auto &uboBuffer:uboBuffers ){
         uboBuffer = std::make_unique<LveBuffer>(
             lveDevice,
@@ -92,6 +94,8 @@ void FirstApp::run() {
         frameTime = glm::min(frameTime, 0.1f);
 
         cameraController.moveInPlanceXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
+        //std::cout<<frameTime<<std::endl;
+        lveWindow.setWindowTitle("fps: " +std::to_string(1/frameTime));
         camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
         float aspect = lveRenderer.getAspectRatio();

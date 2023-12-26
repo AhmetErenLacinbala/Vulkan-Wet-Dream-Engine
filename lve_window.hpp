@@ -22,6 +22,10 @@ namespace lve {
 
         GLFWwindow* getGLFWwindow() const {return window;}
 
+        void setWindowTitle(std::string title){
+            glfwSetWindowTitle(window, title.c_str());
+        };
+
         void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         private:
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
