@@ -4,6 +4,7 @@
 #include "simple_render_system.hpp"
 #include "point_light_system.hpp"
 #include "lve_buffer.hpp"
+#include "baseTerrain.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -43,7 +44,6 @@ FirstApp::~FirstApp() {
 }
 
 void FirstApp::run() {
-
     std::vector<std::unique_ptr<LveBuffer>> uboBuffers(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
     
     for(auto &uboBuffer:uboBuffers ){
@@ -132,6 +132,19 @@ void FirstApp::run() {
 }
 
 void FirstApp::loadGameObjects() {
+
+
+    BaseTerrain terrain("./data/heightmap.save");
+    std::shared_ptr<LveModel> terrainModel = LveModel::loadHeightMap(lveDevice, terrain.terrainData);
+
+    auto terrainObject = LveGameObject::createGameObject();
+    terrainObject.model = terrainModel;
+    terrainObject.transform.scale = {0.03f,0.01f,0.03f};
+    terrainObject.transform.translation = {-5.f, -0.5f, -5.f};
+    gameObjects.emplace(terrainObject.getId(), std::move(terrainObject));
+
+
+
     std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(lveDevice, "./models/smooth_vase.obj");
     auto gameObject1 = LveGameObject::createGameObject();
     gameObject1.model = lveModel;
@@ -149,12 +162,12 @@ void FirstApp::loadGameObjects() {
     //because the z value is form 0 to 1 front half to he object will be cliped since it is bigger than viewing volume
     //so we move it on z axis then scale it by half
 
-    std::shared_ptr<LveModel> quadModel = LveModel::createModelFromFile(lveDevice, "./models/quad.obj");
+    /*std::shared_ptr<LveModel> quadModel = LveModel::createModelFromFile(lveDevice, "./models/quad.obj");
     auto quad_floor = LveGameObject::createGameObject();
     quad_floor.model = quadModel;
     quad_floor.transform.translation = {0.f, .5f, 0.f};
     quad_floor.transform.scale = {3.f, 1.f, 3.f};
-    gameObjects.emplace(quad_floor.getId(), std::move(quad_floor));
+    gameObjects.emplace(quad_floor.getId(), std::move(quad_floor));*/
 
 }
 

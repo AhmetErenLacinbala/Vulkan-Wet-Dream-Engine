@@ -36,6 +36,7 @@ namespace lve
         std::vector<uint32_t> indices {};
 
         void loadModel(const std::string &filepath);
+        void loadHeightMap(const std::vector<std::vector<float>>& heightMap);
 
     };
 
@@ -45,6 +46,7 @@ namespace lve
         LveModel &operator=(const LveModel &) = delete;
 
         static std::unique_ptr<LveModel> createModelFromFile(LveDevice &device, const std::string &filepath);
+        static std::unique_ptr<LveModel> loadHeightMap(LveDevice &device, const std::vector<std::vector<float>>& heightMap);
 
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);

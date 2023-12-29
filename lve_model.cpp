@@ -33,12 +33,82 @@ LveModel::LveModel(LveDevice &device, const LveModel::Builder &builder) : lveDev
 LveModel::~LveModel() {
 }
 
+
+
 std::unique_ptr<LveModel> LveModel::createModelFromFile(LveDevice &device, const std::string &filepath) {
     Builder builder{};
     builder.loadModel(filepath);
     std::cout << "Vertex count: " << builder.vertices.size() << "\n";
     return std::make_unique<LveModel>(device, builder);
 }
+
+std::unique_ptr<LveModel> LveModel::loadHeightMap(LveDevice &device, const std::vector<std::vector<float>>& heightMap){
+
+    Builder builder{};
+    float scale = 1.0f; // Scale for the grid spacing
+    float heightScale = 1.0f; // Scale for the height values
+
+    size_t rows = heightMap.size();
+    size_t cols = heightMap.empty() ? 0 : heightMap[0].size();
+      for (size_t z = 0; z < rows; ++z) {
+        for (size_t x = 0; x < cols; ++x) {
+            float height = heightMap[z][x];
+
+            Vertex vertex{};
+            vertex.position = glm::vec3(x * scale, height * heightScale, z * scale);
+            vertex.color = glm::vec3(1.0f); // Placeholder color
+            vertex.normal = glm::vec3(0.0f, 1.0f, 0.0f); // Placeholder normal
+            vertex.uv = glm::vec2(x / static_cast<float>(cols), z / static_cast<float>(rows));
+
+            builder.vertices.push_back(vertex);
+        }
+    }
+        // Generate indices (for a grid of quads)
+    for (size_t z = 0; z < rows - 1; ++z) {
+        for (size_t x = 0; x < cols - 1; ++x) {
+            uint32_t topLeft = z * cols + x;
+            uint32_t topRight = topLeft + 1;
+            uint32_t bottomLeft = (z + 1) * cols + x;
+            uint32_t bottomRight = bottomLeft + 1;
+
+            builder.indices.push_back(topLeft);
+            builder.indices.push_back(bottomLeft);
+            builder.indices.push_back(topRight);
+
+            builder.indices.push_back(topRight);
+            builder.indices.push_back(bottomLeft);
+            builder.indices.push_back(bottomRight);
+        }
+    }
+
+    for (size_t z = 0; z < rows; ++z) {
+        for (size_t x = 0; x < cols; ++x) {
+            glm::vec3 sumNormals(0.0f);
+
+            // Neighbors
+            glm::vec3 left = x > 0 ?
+                glm::vec3(-1.0f, heightMap[z][x - 1] - heightMap[z][x], 0.0f) : glm::vec3(0.0f);
+            glm::vec3 right = x < rows - 1 ?
+                glm::vec3(1.0f, heightMap[z][x + 1] - heightMap[z][x], 0.0f) : glm::vec3(0.0f);
+            glm::vec3 down = z > 0 ?
+                glm::vec3(0.0f, heightMap[z - 1][x] - heightMap[z][x], -1.0f) : glm::vec3(0.0f);
+            glm::vec3 up = z < rows - 1 ?
+                glm::vec3(0.0f, heightMap[z + 1][x] - heightMap[z][x], 1.0f) : glm::vec3(0.0f);
+
+            // Cross products to compute normals
+            if (x > 0 && z > 0) sumNormals += glm::cross(left, down);
+            if (x < rows - 1 && z > 0) sumNormals += glm::cross(down, right);
+            if (x < rows - 1 && z < rows - 1) sumNormals += glm::cross(right, up);
+            if (x > 0 && z < rows - 1) sumNormals += glm::cross(up, left);
+
+            // Assign and normalize the normal
+            builder.vertices[z * rows + x].normal = glm::normalize(sumNormals);
+        }
+    }
+    return std::make_unique<LveModel>(device, builder);
+
+}
+
 void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
     vertexCount = static_cast<uint32_t>(vertices.size());
     assert(vertexCount >= 3 && "Vertex count must be at least 3");

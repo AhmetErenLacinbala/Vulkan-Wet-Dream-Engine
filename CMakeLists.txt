@@ -19,6 +19,7 @@ set(SOURCES
     lve_buffer.cpp
     lve_descriptors.cpp
     point_light_system.cpp
+    baseTerrain.cpp
 )
 
 set(HEADERS
@@ -39,6 +40,7 @@ set(HEADERS
     lve_frame_info.hpp
     lve_descriptors.hpp
     point_light_system.hpp
+    baseTerrain.hpp
 )
 
 # Find Vulkan, GLFW, and GLM
@@ -70,6 +72,13 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/models
         $<TARGET_FILE_DIR:VulkanTest>/models
+)
+
+add_custom_command(
+    TARGET VulkanTest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/data
+        $<TARGET_FILE_DIR:VulkanTest>/data
 )
 
 # Run compile.sh script

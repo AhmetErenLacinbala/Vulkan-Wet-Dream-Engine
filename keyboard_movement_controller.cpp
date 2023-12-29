@@ -23,9 +23,9 @@ void KeyboardMovementController::moveInPlanceXZ(GLFWwindow *window, float dt, Lv
 
 
     glm::vec3 rotate{0};
-    rotate.y += static_cast<float>(dX);
-    rotate.x -= static_cast<float>(dY);
-std::cout << "float: x: " << std::setprecision(10) << dX << " y: " << std::setprecision(10) << dY << std::endl;
+    rotate.y += static_cast<float>(dX / 4);
+    rotate.x -= static_cast<float>(dY / 4);
+    //std::cout << "float: x: " << std::setprecision(10) << dX << " y: " << std::setprecision(10) << dY << std::endl;
 
     if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) {
         rotate.y += 1.f;
